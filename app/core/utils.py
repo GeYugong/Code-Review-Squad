@@ -1,13 +1,23 @@
 import json
 from typing import Any
 
+
+def _strip_code_fence(text: str) -> str:
+    text = text.strip()
+    if text.startswith("```") and text.endswith("```"):
+        lines = text.splitlines()
+        if len(lines) >= 3:
+            return "\n".join(lines[1:-1]).strip()
+    return text
+
+
 def try_parse_json(text: str) -> Any:
     """
     Best-effort: extract the first JSON object/array from model output.
     """
     if not text:
         return text
-    text = text.strip()
+    text = _strip_code_fence(text)
 
     # quick path
     if (text.startswith("{") and text.endswith("}")) or (text.startswith("[") and text.endswith("]")):
